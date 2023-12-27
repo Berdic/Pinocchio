@@ -18,7 +18,7 @@
 
 #ifndef HASHUTILS_H
 #define HASHUTILS_H
-
+#define _SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS
 #include "mathutils.h"
 
 #ifndef _WIN32
