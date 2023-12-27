@@ -83,6 +83,4 @@ vector<Vector3> PINOCCHIO_API refineEmbedding(TreeType *distanceField, const vec
 
 //to compute the attachment, create a new Attachment object
 
-static bool _CANCELPROCESS = false;
-
 #endif //PINOCCHIOAPI_H

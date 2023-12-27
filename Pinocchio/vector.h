@@ -230,41 +230,52 @@ namespace _VectorPrivate {
 template <int Dim>
 class VecOp
 {
-private:
+public:
+    template<class R, class R1, int D>
+    static void assign(const VRD1& from, VRD& to) { to[last] = from[last]; Next::assign(from, to); }
+
+    template<class R, class R1, int D>
+    static void assign(const R1& from, VRD& to) { to[last] = from; Next::assign(from, to); }
+
+    template<class R, int D, class Op, class Accum>
+    static typename Accum::result_type accumulate(const Op& op, const Accum& accum, const VRD& v)
+    {
+        return accum(op(v[last]), Next::accumulate(op, accum, v));
+    }
+
+    template<class R, int D, class Op, class Accum>
+    static typename Accum::result_type accumulate(const Op& op, const Accum& accum, const VRD& v, const VRD& other)
+    {
+        return accum(op(v[last], other[last]), Next::accumulate(op, accum, v, other));
+    }
     static const int last = Dim - 1;
     typedef VecOp<Dim - 1> Next;
     template<int D> friend class VecOp;
     template<class R, int D> friend class Vector;
 
-    template<class R, class R1, int D>
-    static void assign(const VRD1 &from, VRD &to) { to[last] = from[last]; Next::assign(from, to); }
-
-    template<class R, class R1, int D>
-    static void assign(const R1 &from, VRD &to) { to[last] = from; Next::assign(from, to); }
+    template<class R, int D, class F>
+    static Vector<typename F::result_type, D> apply(const F& func, const VRD& v)
+    {
+        Vector<typename F::result_type, D> out; _apply(func, v, out); return out;
+    }
 
     template<class R, int D, class F>
-    static Vector<typename F::result_type, D> apply(const F &func, const VRD &v)
-    { Vector<typename F::result_type, D> out; _apply(func, v, out); return out; }
+    static Vector<typename F::result_type, D> apply(const F& func, const VRD& v, const VRD& other)
+    {
+        Vector<typename F::result_type, D> out; _apply(func, v, other, out); return out;
+    }
 
     template<class R, int D, class F>
-    static Vector<typename F::result_type, D> apply(const F &func, const VRD &v, const VRD &other)
-    { Vector<typename F::result_type, D> out; _apply(func, v, other, out); return out; }
-
-    template<class R, int D, class Op, class Accum>
-    static typename Accum::result_type accumulate(const Op &op, const Accum &accum, const VRD &v)
-    { return accum(op(v[last]), Next::accumulate(op, accum, v)); }
-
-    template<class R, int D, class Op, class Accum>
-    static typename Accum::result_type accumulate(const Op &op, const Accum &accum, const VRD &v, const VRD &other)
-    { return accum(op(v[last], other[last]), Next::accumulate(op, accum, v, other)); }
+    static void _apply(const F& func, const VRD& v, Vector<typename F::result_type, D>& out)
+    {
+        out[last] = func(v[last]); Next::_apply(func, v, out);
+    }
 
     template<class R, int D, class F>
-    static void _apply(const F &func, const VRD &v, Vector<typename F::result_type, D> &out)
-    { out[last] = func(v[last]); Next::_apply(func, v, out); }
-
-    template<class R, int D, class F>
-    static void _apply(const F &func, const VRD &v, const VRD &other, Vector<typename F::result_type, D> &out)
-    { out[last] = func(v[last], other[last]); Next::_apply(func, v, other, out); }
+    static void _apply(const F& func, const VRD& v, const VRD& other, Vector<typename F::result_type, D>& out)
+    {
+        out[last] = func(v[last], other[last]); Next::_apply(func, v, other, out);
+    }
 };
 
 template <>

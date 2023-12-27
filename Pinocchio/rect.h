@@ -141,7 +141,7 @@ namespace _RectPrivate {
 template <int Dim>
 class RectOp
 {
-private:
+public:
     static const int last = Dim - 1;
     typedef RectOp<Dim - 1> Next;
     template<int D> friend class RectOp;
@@ -174,28 +174,29 @@ private:
 template <>
 class RectOp<1>
 {
-private:
+public:
     template<int D> friend class RectOp;
 
     template<class R, int D>
-    static R distSq(const RRD &r, const VRD &v)
+    static R distSq(const RRD& r, const VRD& v)
     {
-	if(r.getLo()[0] > v[0])
-	    return SQR(r.getLo()[0] - v[0]);
-	if(r.getHi()[0] < v[0])
-	    return SQR(v[0] - r.getHi()[0]);
-	return R();
+        if (r.getLo()[0] > v[0])
+            return SQR(r.getLo()[0] - v[0]);
+        if (r.getHi()[0] < v[0])
+            return SQR(v[0] - r.getHi()[0]);
+        return R();
     }
 
     template<class R, int D>
-    static R distSq(const RRD &r, const RRD &r2)
+    static R distSq(const RRD& r, const RRD& r2)
     {
-	if(r.getLo()[0] > r2.getHi()[0])
-	    return SQR(r.getLo()[0] - r2.getHi()[0]);
-	if(r.getHi()[0] < r2.getLo()[0])
-	    return SQR(r2.getLo()[0] - r.getHi()[0]);
-	return R();
+        if (r.getLo()[0] > r2.getHi()[0])
+            return SQR(r.getLo()[0] - r2.getHi()[0]);
+        if (r.getHi()[0] < r2.getLo()[0])
+            return SQR(r2.getLo()[0] - r.getHi()[0]);
+        return R();
     }
+
 
 };
 } //namespace _RectPrivate
